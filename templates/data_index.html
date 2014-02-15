@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Data Functions</h2>
+<a href="{{url_for('clear_db')}}">Clear Database</a>
+<br>
+<a href="{{url_for('sample_data')}}">Load Sample Data</a>
+    <hr>
+ <form action="{{ url_for('load_authors') }}" method="post">
+      <dl>
+        <dt>Authors Data:
+        <dd><textarea name="data" rows="15" cols="80"></textarea>
+        <dd><input type="submit" name="load_author_sbm" value="Load Authors">
+      </dl>
+    </form>
+    <hr>
+ <form action="{{ url_for('load_students') }}" method="post">
+      <dl>
+        <dt>Students Data:
+        <dd><textarea name="data" rows="15" cols="80"></textarea>
+        <dd><input type="submit" name="load_student_sbm" value="Load Students">
+      </dl>
+    </form>
+<a href="{{url_for('clear_db')}}">Clear Database</a>
+<br>
+<a href="{{url_for('sample_data')}}">Load Sample Data</a>
+{% endblock %}

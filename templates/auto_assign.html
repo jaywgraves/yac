@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Auto Assign Complete</h3>
+
+{% for m in messages %}
+{{m[0]}}- {{m[1]}}<br>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript" charset="utf-8">
+var FULL = {{FULL}};
+var HIGH_GRADE_COUNT = {{HIGH_GRADE_COUNT}};
+var HIGH_GRADE = '{{HIGH_GRADE}}';
+var AUTHOR_IDS = {{AUTHOR_IDS}};
+var oTable;
+$(document).ready(function() {
+        oTable = $('#students').dataTable({
+            "aoColumnDefs":[
+            //{"bVisible":false,"aTargets":[-1]},
+            {"bSortable":false,"aTargets":['_all']},
+            ],
+            "sAjaxSource":"ajax/",
+            'bProcessing':false,
+            'bAutoWidth':false,
+            "sDom": 'i<"table_overflow"t>p',
+            'bPaginate':false,
+
+            });
+        setup_filter_events();
+        $('#assign_student_form').bind('submit',function() { process_assign_student(); return false; });  
+        initial_author_highlight();
+        $("#students tbody").click(function(event) {
+            var tr = $(event.target.parentNode);
+            //var aPos = oTable.fnGetPosition(tr);
+            //var aData =oTable.fnGetData(aPos[0]);
+            var tds = tr.children();
+            $("#assign_name").text(tds[1].innerText);
+            //$("#s_id").val(tds[9].innerText);
+            $("#s_id").val(tds[10].innerText);
+            $("#sess_1_prev").val(tds[2].innerText);
+            $("#sess_2_prev").val(tds[4].innerText);
+            $("#grade").val(tds[8].innerText);
+            $("#sess_1").val(tds[2].innerText);
+            $("#sess_2").val(tds[4].innerText);
+            $("#assign_student").modal('show');
+        });
+         
+        
+} );
+
+var filter_function = function(idx,table,that){
+    if (that.tagName == "SELECT") {
+        return function() {
+            if (that.value == "") {
+                table.fnFilter("", idx,true,false);
+            } else {
+                table.fnFilter( "^" + that.value + "$", idx,true,false);
+            }
+        }
+    }
+    if (that.name == "qty" || that.name == "age_in_days") {
+        return function() {
+            table.fnDraw();
+            }
+    } else if (that.tagName === 'INPUT' ) {
+        return function() {
+            table.fnFilter( that.value, idx);
+        }
+    }
+}
+
+
+var setup_filter_events = function () {
+    var tds = $("#filter_row").children(); 
+    for (var i = 0;i < tds.length;i++) { 
+            var search = $(tds[i]).children();
+            if (search[0]) {
+                search.change(filter_function(i,oTable,search[0]));
+            }
+    }
+}
+
+var adjust_author_counts = function (a_id,session,delta,grade) {
+    var selector = '#a'+a_id+session;
+    var node = $(selector);
+    var value = parseInt(node.text());
+    value = value + delta;
+    node.text(value);
+    highlight_author_counts(node,value,FULL);
+    if (grade === HIGH_GRADE) {
+        node = $(selector +'h');
+        value = parseInt(node.text());
+        value = value + delta;
+        node.text(value);
+        highlight_author_counts(node,value,HIGH_GRADE_COUNT);
+    }
+}
+var highlight_author_counts = function (node,value,limit) {
+    if (value > limit) {
+        //node.css('backgroundColor','#ff0000');
+        node.css('color','#ff0000');
+    }
+    else {
+        //node.css('backgroundColor','#ffffff');
+        node.css('color','#000000');
+    }
+}
+
+var initial_author_highlight = function () {
+    var SESSIONS = ['1','2'];
+    for (var i = 0; i < AUTHOR_IDS.length; i++) {
+        for (var j = 0; j < SESSIONS.length; j++) {
+            var selector = '#a'+AUTHOR_IDS[i]+SESSIONS[j];
+            var node = $(selector);
+            var value = parseInt(node.text());
+            highlight_author_counts(node,value,FULL);
+            node = $(selector+'h');
+            value = parseInt(node.text());
+            highlight_author_counts(node,value,HIGH_GRADE_COUNT);
+        }
+    }
+
+
+}
+var process_assign_student = function() {
+    var form = $('#assign_student_form')
+    var formdata = form.serialize();
+    var url = form.attr('action');
+    var form_cb = function(datareceived){  
+        $("#assign_student").modal('hide');
+        var grade = $("#grade",form).val();
+        var s_id = parseInt($("#s_id",form).val());
+        var sess_1_prev = $("#sess_1_prev",form).val();
+        var sess_2_prev = $("#sess_2_prev",form).val();
+        var sess_1 = $("#sess_1",form).val();
+        var sess_2 = $("#sess_2",form).val();
+        adjust_author_counts(sess_1_prev,1,-1,grade)
+        adjust_author_counts(sess_1,1,1,grade)
+        adjust_author_counts(sess_2_prev,2,-1,grade)
+        adjust_author_counts(sess_2,2,1,grade)
+        oTable.fnUpdate(sess_1,s_id-1,2);
+        oTable.fnUpdate(sess_2,s_id-1,4);
+    }    
+    $.get(url,formdata,form_cb);
+
+
+}
+</script>
+
+
+
+<table>
+    {% for row in authors|batch(4) %}
+    <tr>
+        {% for a in row %}
+        <td><b>{{a.id}}</b>-{{a.last_name}}</td>
+            <td> <span id="a{{a.id}}1">{{a.sess_1_cnt}}</span> (<span id="a{{a.id}}1h">{{a.sess_1_high_cnt}}</span>)</td>
+            <td> <span id="a{{a.id}}2">{{a.sess_2_cnt}}</span> (<span id="a{{a.id}}2h">{{a.sess_2_high_cnt}}</span>)</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Assign Students</h3>
+
+<table id="students">
+    <thead id="header_row">
+    <tr>
+{% for h in headings %}
+        <th>{{h}}</th>
+{% endfor %}
+    </tr>
+    <tr id="filter_row">
+{% for f in filters %}
+        <td>{{fm.table_filter(*f)}}</td>
+{% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <tfoot>
+<!--<tr>
+{% for h in headings %}
+        <th></th>
+{% endfor %}
+    </tr> -->
+    </tfoot>
+    
+</table>
+
+<div id="assign_student" class="modal hide fade" style="display: none; ">
+    <div class="modal-header">
+      <a href="#" class="close">X</a>
+      <h3>Assign Student</h3>
+    </div>
+    <form action="{{ url_for('chg_student_assign') }}" method="GET" id="assign_student_form">
+    <div class="modal-body">
+        <div id="assign_name"></div>
+        <input type="hidden" name="s_id" id="s_id">
+        <input type="hidden" name="sess_1_prev" id="sess_1_prev">
+        <input type="hidden" name="sess_2_prev" id="sess_2_prev">
+        <input type="hidden" name="grade" id="grade">
+        <div>
+        <label for="sess_1">Session 1</label>&nbsp;&nbsp;
+        <input type="text" name="sess_1" id="sess_1">
+        </div>
+        <div>
+        <label for="sess_2">Session 2</label>&nbsp;&nbsp;
+        <input type="text" name="sess_2" id="sess_2">
+        </div>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" name="assign_student" value="Change Student Assignment">
+    </div>
+    </form>
+
+</div>
+
+{% endblock %}
+
+

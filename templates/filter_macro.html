@@ -1,0 +1,6 @@
+{% macro table_filter(name,ftype,width) %}
+    {% if ftype == 'input' %}
+    <input type="text" class="filter" name="filter_{{name}}" id="#filter_{{name}}" size="{{width}}">
+    {% endif %}
+{% endmacro %}
+

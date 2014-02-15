@@ -1,0 +1,19 @@
+Nbr	Name	Room	Host
+1	Elliot Meacham	Room 100a	Floyd Slevin
+2	Carlie Tullis	Room 100b	Sammie Zeck
+3	Jung Kates	Room 102	Brandon Huard
+4	Irena Mash	Room 202	Janee Henn
+5	Juana Gallego	Room 302	Pam Kanode
+6	Georgeann Teran	Room 506a	Kai Mixson
+7	Cleo Gorton	Room 407	Jeanmarie Klima
+8	Tory Justus	Room 304	Hisako Bruening
+9	Margert Depuy	Room 301	Jonnie Click
+10	Caroline Smelser	Room 502	Larita Guyette
+11	Alvera Loy	Room 503	Eulah Gatewood
+12	Cindi Hiott	Room 501	Kera Lathrop
+13	Nakisha Waters	Room 305	Agnes Cheatwood
+14	Shayla Eber	Room 303	Anabel Gaskamp
+15	Maxine Grewell	Room 507	Christian Rosenstein
+16	Delaine Patnaude	Room 307	Laureen Pigeon
+17	Elliott Alden	Room 908a	Youlanda Pushard
+18	Velda Sytsma	Room 808	Jayne Bugbee

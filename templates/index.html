@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+    <tr><td>{{s_cnt}} Students in {{teacher_cnt}} classes</td></tr>
+    <tr><td>{{s_inc_cnt}} - Incomplete</td></tr>
+    <tr><td>{{s_com_cnt}} - Complete</td></tr>
+    <tr><td>{{s_err_cnt}} - Error</td></tr>
+</table>
+<table>
+    <tr><td>Authors ({{author_cnt}} total)</td><td>Session 1 Count</td><td>Session 2 Count</td><td colspan="5">Choice Rank Counts</td></tr>
+    {% for a in author_stats %}
+    <tr><td>{{a.id}} - {{a.name}}</td><td>{{a.sess_1_cnt}}</td><td>{{a.sess_2_cnt}}</td><td>{{a.choice_count_1}}</td><td>{{a.choice_count_2}}</td><td>{{a.choice_count_3}}</td><td>{{a.choice_count_4}}</td><td>{{a.choice_count_5}}</td></tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}
